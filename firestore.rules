@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "rodrigovizzard@gmail.com" ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isPartner() {
+      return isAuthenticated() && 
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'parceiro' || 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'empresa'));
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // Pets (Assuming there's a pets collection based on the app description)
+    match /pets/{petId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin() || isPartner());
+      allow delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || resource.data.userId == request.auth.uid || isAdmin());
+
+      match /medicalRecords/{recordId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && (get(/databases/$(database)/documents/pets/$(petId)).data.ownerId == request.auth.uid || isAdmin() || isPartner());
+        allow update: if isAuthenticated() && (resource.data.clinicId == request.auth.uid || isAdmin());
+        allow delete: if isAdmin();
+      }
+
+      match /vaccines/{vaccineId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && (get(/databases/$(database)/documents/pets/$(petId)).data.ownerId == request.auth.uid || isAdmin() || isPartner());
+        allow update: if isAuthenticated() && (resource.data.clinicId == request.auth.uid || isAdmin());
+        allow delete: if isAdmin();
+      }
+    }
+
+    // Found History
+    match /found_history/{historyId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // Transfer Requests
+    match /transfer_requests/{requestId} {
+      allow read: if isAuthenticated() && (resource.data.fromUserId == request.auth.uid || resource.data.toUserId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.fromUserId == request.auth.uid || resource.data.toUserId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.fromUserId == request.auth.uid || resource.data.toUserId == request.auth.uid || isAdmin());
+    }
+    
+    // Partners
+    match /partners/{partnerId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // Collection Group matches for clinic patients
+    match /{path=**}/medicalRecords/{recordId} {
+      allow read: if isAuthenticated();
+    }
+    match /{path=**}/vaccines/{vaccineId} {
+      allow read: if isAuthenticated();
+    }
+  }
+}

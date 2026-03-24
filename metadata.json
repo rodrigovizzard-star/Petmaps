@@ -1,0 +1,8 @@
+{
+  "name": "Petmaps",
+  "description": "Mapa colaborativo para encontrar pets perdidos e registrar avistamentos.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

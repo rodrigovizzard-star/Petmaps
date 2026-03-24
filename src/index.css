@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #005438;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+.gm-style-iw {
+  @apply !rounded-2xl !p-0 overflow-hidden;
+}
+
+.gm-style-iw-d {
+  @apply !overflow-hidden;
+}
+
+.gm-ui-hover-effect {
+  @apply !top-1 !right-1 !bg-white/80 !rounded-full;
+}
