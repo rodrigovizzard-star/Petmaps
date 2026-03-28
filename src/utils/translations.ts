@@ -16,7 +16,9 @@ export const getStatusLabel = (status: PetStatus | string, countryCode?: string,
       'sighted': 'Avistado',
       'avistado': 'Avistado',
       'adoption': 'Para Doação',
-      'adopted': 'Doado'
+      'adocao': 'Para Doação',
+      'adopted': 'Doado',
+      'doado': 'Doado'
     },
     'en': {
       'lost': 'Lost',

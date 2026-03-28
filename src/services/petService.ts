@@ -494,7 +494,7 @@ export const petService = {
     
     const updates: any = { 
       status,
-      isActive: status === 'perdido' || status === 'lost' || status === 'sighted' || status === 'adoption'
+      isActive: status === 'perdido' || status === 'lost' || status === 'sighted' || status === 'adoption' || status === 'adocao'
     };
 
     if (isCanil !== undefined) {
@@ -518,8 +518,8 @@ export const petService = {
     }
 
     // If marked as found/safe/adopted, record in history and increment count
-    const isFoundStatus = status === 'found' || status === 'foundOwner' || status === 'seguro';
-    const isAdoptedStatus = status === 'adopted';
+    const isFoundStatus = status === 'found' || status === 'foundOwner' || status === 'seguro' || status === 'encontrado';
+    const isAdoptedStatus = status === 'adopted' || status === 'doado';
     
     if (isFoundStatus || isAdoptedStatus) {
       try {
@@ -527,7 +527,7 @@ export const petService = {
         if (petSnap.exists()) {
           const petData = petSnap.data() as Pet;
           // For Canil, we always want to record adoption history even if it wasn't "lost"
-          const wasLost = petData.status === 'perdido' || petData.status === 'lost' || petData.status === 'sighted' || petData.status === 'adoption';
+          const wasLost = petData.status === 'perdido' || petData.status === 'lost' || petData.status === 'sighted' || petData.status === 'adoption' || petData.status === 'adocao';
           
           if (wasLost) {
             // Only add to Found History if it's NOT an adoption (as per existing logic)
@@ -781,6 +781,40 @@ export const petService = {
     } catch (error) {
       console.error('Error fetching clinic patients:', error);
       return [];
+    }
+  },
+
+  async getPetCountsByCity(city: string) {
+    try {
+      const cityLower = city.toLowerCase();
+      const normalizedCity = cityLower.replace(/\s*-\s*/g, '-');
+      const baseCity = cityLower.split('-')[0].trim();
+      
+      const q = query(
+        collection(db, PETS_COLLECTION),
+        where('cidade_search', 'array-contains-any', [normalizedCity, cityLower, baseCity])
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const pets = querySnapshot.docs.map(doc => doc.data() as Pet);
+      
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+      return {
+        new: pets.filter(p => {
+          const createdAt = p.createdAt instanceof Timestamp ? p.createdAt.toDate() : new Date(p.createdAt as any);
+          return createdAt >= sevenDaysAgo;
+        }).length,
+        lost: pets.filter(p => p.status === 'lost' || p.status === 'perdido').length,
+        sighted: pets.filter(p => p.status === 'sighted' || p.status === 'avistado').length,
+        found: pets.filter(p => p.status === 'found' || p.status === 'foundOwner' || p.status === 'seguro' || p.status === 'encontrado').length,
+        forAdoption: pets.filter(p => p.status === 'adoption' || p.status === 'adocao' || p.status === 'para_doar').length,
+        adopted: pets.filter(p => p.status === 'adopted' || p.status === 'doado' || p.status === 'adotado').length,
+      };
+    } catch (error) {
+      console.error('Error fetching pet counts by city:', error);
+      return { new: 0, lost: 0, sighted: 0, found: 0, forAdoption: 0, adopted: 0 };
     }
   }
 };

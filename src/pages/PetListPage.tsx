@@ -157,22 +157,24 @@ export const PetListPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center bg-gray-100 p-1 rounded-2xl">
-                <button 
-                  onClick={() => setViewMode('list')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <List size={18} />
-                  Lista
-                </button>
-                <button 
-                  onClick={() => setViewMode('map')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === 'map' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                  <MapIcon size={18} />
-                  Mapa
-                </button>
-              </div>
+              {(status !== 'adoption' && status !== 'adopted') && (
+                <div className="flex items-center bg-gray-100 p-1 rounded-2xl">
+                  <button 
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <List size={18} />
+                    Lista
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('map')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === 'map' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <MapIcon size={18} />
+                    Mapa
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -306,16 +308,18 @@ export const PetListPage = () => {
                               <Trash2 size={16} />
                             </button>
                           )}
-                          <button 
-                            onClick={() => {
-                              setViewMode('map');
-                              setMapCenter(pet.location);
-                            }}
-                            className="px-4 bg-emerald-50 text-emerald-600 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors"
-                          >
-                            <MapPin size={16} />
-                            No Mapa
-                          </button>
+                          {(status !== 'adoption' && status !== 'adopted') && (
+                            <button 
+                              onClick={() => {
+                                setViewMode('map');
+                                setMapCenter(pet.location);
+                              }}
+                              className="px-4 bg-emerald-50 text-emerald-600 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors"
+                            >
+                              <MapPin size={16} />
+                              No Mapa
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

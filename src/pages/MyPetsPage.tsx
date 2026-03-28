@@ -125,7 +125,7 @@ export const MyPetsPage = () => {
       return;
     }
 
-    const isCurrentlyLost = pet.status === 'perdido' || pet.status === 'lost';
+    const isCurrentlyLost = pet.status === 'perdido' || pet.status === 'lost' || pet.status === 'sighted' || pet.status === 'avistado';
     
     if (!isCurrentlyLost) {
       setLostObservations(pet.lostObservations || '');
@@ -397,7 +397,7 @@ export const MyPetsPage = () => {
                       {isCanil ? (
                         <div className="flex flex-col gap-2 w-full md:w-auto">
                           <div className="flex flex-row md:flex-col gap-2">
-                            {pet.status !== 'adoption' ? (
+                            {pet.status !== 'adoption' && pet.status !== 'sighted' && pet.status !== 'avistado' ? (
                               <button
                                 onClick={() => confirmStatusChange(pet, 'adoption')}
                                 disabled={actionLoading === pet.id}
@@ -484,26 +484,24 @@ export const MyPetsPage = () => {
                         </div>
                       ) : (
                         <div className="flex flex-col gap-2 w-full md:w-auto">
-                          {pet.status !== 'sighted' && pet.status !== 'avistado' && (
-                            <div className="flex flex-row md:flex-col gap-2">
-                              <button
-                                onClick={() => handleToggleStatus(pet)}
-                                disabled={actionLoading === pet.id}
-                                className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl transition-all ${
-                                  (pet.status === 'perdido' || pet.status === 'lost') 
-                                    ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' 
-                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
-                                }`}
-                                title={(pet.status === 'lost' || pet.status === 'perdido') ? 'Marcar como Encontrado' : 'Marcar como Perdido'}
-                              >
-                                {actionLoading === pet.id ? <Loader2 className="animate-spin" size={20} /> : 
-                                 ((pet.status === 'perdido' || pet.status === 'lost') ? <CheckCircle size={20} /> : <AlertCircle size={20} />)}
-                                <span className="text-xs font-bold">
-                                  {(pet.status === 'lost' || pet.status === 'perdido') ? 'Encontrado' : 'Perdido'}
-                                </span>
-                              </button>
-                            </div>
-                          )}
+                          <div className="flex flex-row md:flex-col gap-2">
+                            <button
+                              onClick={() => handleToggleStatus(pet)}
+                              disabled={actionLoading === pet.id}
+                              className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl transition-all ${
+                                (pet.status === 'perdido' || pet.status === 'lost' || pet.status === 'sighted' || pet.status === 'avistado') 
+                                  ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' 
+                                  : 'bg-red-50 text-red-600 hover:bg-red-100'
+                              }`}
+                              title={(pet.status === 'lost' || pet.status === 'perdido' || pet.status === 'sighted' || pet.status === 'avistado') ? 'Marcar como Encontrado' : 'Marcar como Perdido'}
+                            >
+                              {actionLoading === pet.id ? <Loader2 className="animate-spin" size={20} /> : 
+                               ((pet.status === 'perdido' || pet.status === 'lost' || pet.status === 'sighted' || pet.status === 'avistado') ? <CheckCircle size={20} /> : <AlertCircle size={20} />)}
+                              <span className="text-xs font-bold">
+                                {(pet.status === 'lost' || pet.status === 'perdido' || pet.status === 'sighted' || pet.status === 'avistado') ? 'Encontrado' : 'Perdido'}
+                              </span>
+                            </button>
+                          </div>
                           
                           <div className="flex flex-row gap-2 justify-center md:justify-start">
                             <button

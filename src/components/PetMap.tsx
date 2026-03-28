@@ -140,8 +140,8 @@ export const PetMap: React.FC<PetMapProps> = ({ pets, onMarkerClick, onDeletePet
     const validPets: Pet[] = [];
 
     pets.forEach(pet => {
-      // Don't show 'seguro' pets on the map
-      if (pet.status === 'seguro') return;
+      // Don't show 'seguro', 'adoption', or 'adopted' pets on the map
+      if (pet.status === 'seguro' || pet.status === 'adoption' || pet.status === 'adocao' || pet.status === 'adopted' || pet.status === 'doado') return;
 
       const lat = typeof pet.location?.lat === 'string' ? parseFloat(pet.location.lat) : pet.location?.lat;
       const lng = typeof pet.location?.lng === 'string' ? parseFloat(pet.location.lng) : pet.location?.lng;
@@ -295,14 +295,6 @@ export const PetMap: React.FC<PetMapProps> = ({ pets, onMarkerClick, onDeletePet
         <div className="flex items-center gap-1.5 shrink-0">
           <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#22c55e] border-2 border-white shadow-sm" />
           <span className="text-[8px] sm:text-[10px] font-black text-gray-800 uppercase tracking-tighter">Encontrado</span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#a855f7] border-2 border-white shadow-sm" />
-          <span className="text-[8px] sm:text-[10px] font-black text-gray-800 uppercase tracking-tighter">Para Doação</span>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#3b82f6] border-2 border-white shadow-sm" />
-          <span className="text-[8px] sm:text-[10px] font-black text-gray-800 uppercase tracking-tighter">Doado</span>
         </div>
       </div>
 

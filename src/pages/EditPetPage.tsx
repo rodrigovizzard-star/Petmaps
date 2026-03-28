@@ -243,16 +243,26 @@ export const EditPetPage = () => {
             >
               {authProfile?.companyType === 'canil' ? (
                 <>
-                  <option value="adoption">Para Doação</option>
-                  <option value="adopted">Doado</option>
+                  {formData.status === 'sighted' || formData.status === 'avistado' ? (
+                    <option value="sighted">Avistado</option>
+                  ) : (
+                    <>
+                      <option value="adoption">Para Doação</option>
+                      <option value="adopted">Doado</option>
+                    </>
+                  )}
                 </>
               ) : (
                 <>
                   <option value="lost">Perdido</option>
                   <option value="found">Encontrado</option>
                   <option value="sighted">Avistado</option>
-                  <option value="adoption">Para Doação</option>
-                  <option value="adopted">Doado</option>
+                  {formData.status !== 'sighted' && formData.status !== 'avistado' && (
+                    <>
+                      <option value="adoption">Para Doação</option>
+                      <option value="adopted">Doado</option>
+                    </>
+                  )}
                 </>
               )}
             </select>

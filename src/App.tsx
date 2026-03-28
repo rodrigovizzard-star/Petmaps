@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { HomePage } from './pages/HomePage';
 import { MapPage } from './pages/MapPage';
 import { AuthPage } from './pages/AuthPage';
 import { RegisterPetPage } from './pages/RegisterPetPage';
@@ -15,6 +16,9 @@ import { ProfessionalDashboardPage } from './pages/ProfessionalDashboardPage';
 import { MyPetsPage } from './pages/MyPetsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PrivacyAndSecurityPage } from './pages/PrivacyAndSecurityPage';
+import { VaccinationCardsPage } from './pages/VaccinationCardsPage';
+import { VeterinaryHistoryPage } from './pages/VeterinaryHistoryPage';
+import { PetIDsPage } from './pages/PetIDsPage';
 import { isFirebaseConfigured } from './services/firebase';
 import { AlertTriangle } from 'lucide-react';
 import { APIProvider } from '@vis.gl/react-google-maps';
@@ -159,6 +163,12 @@ export default function App() {
               
               <Route path="/" element={
                 <PrivateRoute>
+                  <HomePage />
+                </PrivateRoute>
+              } />
+
+              <Route path="/map" element={
+                <PrivateRoute>
                   <MapPage />
                 </PrivateRoute>
               } />
@@ -225,6 +235,24 @@ export default function App() {
               <Route path="/my-pets" element={
                 <PrivateRoute>
                   <MyPetsPage />
+                </PrivateRoute>
+              } />
+
+              <Route path="/vaccination-cards" element={
+                <PrivateRoute>
+                  <VaccinationCardsPage />
+                </PrivateRoute>
+              } />
+
+              <Route path="/veterinary-history" element={
+                <PrivateRoute>
+                  <VeterinaryHistoryPage />
+                </PrivateRoute>
+              } />
+
+              <Route path="/pet-ids" element={
+                <PrivateRoute>
+                  <PetIDsPage />
                 </PrivateRoute>
               } />
 

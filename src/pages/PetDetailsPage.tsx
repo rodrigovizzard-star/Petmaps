@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, MapPin, Calendar, MessageCircle, Share2, Edit2, Trash2, CheckCircle2, AlertTriangle, Clipboard, Syringe, Info, Users, Download, Instagram, Smartphone, FileText, Sparkles, X, Save, ShieldCheck, User, ArrowRightLeft, Search, UserPlus, Heart } from 'lucide-react';
 import { petService } from '../services/petService';
 import { posterService } from '../services/posterService';
@@ -66,6 +66,7 @@ export const PetDetailsPage = () => {
   const [initiatingTransfer, setInitiatingTransfer] = useState(false);
   const [deleteModalType, setDeleteModalType] = useState<'sighted' | 'patient' | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchPet = async () => {
     if (id) {
@@ -132,7 +133,7 @@ export const PetDetailsPage = () => {
   };
 
   const handleMarkAsLost = async () => {
-    const isAdoption = isCanil && (pet?.status === 'adopted' || !pet?.status);
+    const isAdoption = isCanil && (pet?.status === 'adopted' || pet?.status === 'doado' || !pet?.status);
     const confirmMsg = isAdoption ? 'Deseja colocar este pet para doação?' : 'Deseja marcar este pet como perdido?';
     if (!pet || !window.confirm(confirmMsg)) return;
     
@@ -151,13 +152,13 @@ export const PetDetailsPage = () => {
   };
 
   const handleMarkAsFound = async () => {
-    const isAdoption = pet?.status === 'adoption';
+    const isAdoption = pet?.status === 'adoption' || pet?.status === 'adocao';
     const confirmMsg = isAdoption ? 'Deseja marcar este pet como doado?' : 'Deseja marcar este pet como encontrado?';
     if (!pet || !window.confirm(confirmMsg)) return;
     
     setLoading(true);
     try {
-      await petService.updatePetStatus(pet.id, isAdoption ? 'adopted' : 'found');
+      await petService.updatePetStatus(pet.id, isAdoption ? 'doado' : 'found');
       await fetchPet();
       alert(isAdoption ? 'Parabéns! O pet foi marcado como doado.' : 'Parabéns! Ficamos felizes que o pet foi encontrado.');
     } catch (error) {
@@ -171,6 +172,28 @@ export const PetDetailsPage = () => {
   useEffect(() => {
     fetchPet();
   }, [id]);
+
+  useEffect(() => {
+    if (location.state && pet) {
+      const state = location.state as any;
+      let handled = false;
+
+      if (state.openVaccineModal) {
+        setActiveTab('vaccines');
+        setShowAddVaccine(true);
+        handled = true;
+      } else if (state.openMedicalModal) {
+        setActiveTab('history');
+        setShowAddRecord(true);
+        handled = true;
+      }
+
+      if (handled) {
+        // Clear state to avoid reopening on refresh/back
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location.state, pet, navigate, location.pathname]);
 
   const handleGeneratePoster = async () => {
     if (!pet) return;
@@ -726,16 +749,16 @@ export const PetDetailsPage = () => {
 
         {/* Sharing Options */}
         <div className="grid grid-cols-3 gap-3">
-          {isOwner && !isSighted && (
-            (pet.status === 'lost' || pet.status === 'perdido' || pet.status === 'adoption') ? (
+          {isOwner && (
+            (pet.status === 'lost' || pet.status === 'perdido' || pet.status === 'adoption' || pet.status === 'adocao' || isSighted) ? (
               <button 
                 onClick={handleMarkAsFound}
-                className={`col-span-3 flex items-center justify-center gap-3 p-5 ${pet.status === 'adoption' ? 'bg-blue-600' : 'bg-emerald-600'} text-white rounded-3xl font-black shadow-xl hover:opacity-90 transition-all active:scale-95 mb-4`}
+                className={`col-span-3 flex items-center justify-center gap-3 p-5 ${(pet.status === 'adoption' || pet.status === 'adocao') ? 'bg-blue-600' : 'bg-emerald-600'} text-white rounded-3xl font-black shadow-xl hover:opacity-90 transition-all active:scale-95 mb-4`}
               >
                 <CheckCircle2 size={24} />
-                {pet.status === 'adoption' ? 'MARCAR COMO DOADO' : 'MARCAR COMO ENCONTRADO'}
+                {(pet.status === 'adoption' || pet.status === 'adocao') ? 'MARCAR COMO DOADO' : 'MARCAR COMO ENCONTRADO'}
               </button>
-            ) : (pet.status === 'adopted' || pet.status === 'seguro' || pet.status === 'foundOwner' || pet.status === 'found' || !pet.status) ? (
+            ) : (pet.status === 'adopted' || pet.status === 'doado' || pet.status === 'seguro' || pet.status === 'foundOwner' || pet.status === 'found' || !pet.status) ? (
               <button 
                 onClick={handleMarkAsLost}
                 className={`col-span-3 flex items-center justify-center gap-3 p-5 ${isCanil ? 'bg-purple-600' : 'bg-red-600'} text-white rounded-3xl font-black shadow-xl hover:opacity-90 transition-all active:scale-95 mb-4`}

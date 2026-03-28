@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type PetStatus = 'lost' | 'sighted' | 'found' | 'seguro' | 'perdido' | 'avistado' | 'foundOwner' | 'adoption' | 'adopted';
+export type PetStatus = 'lost' | 'sighted' | 'found' | 'seguro' | 'perdido' | 'avistado' | 'encontrado' | 'foundOwner' | 'adoption' | 'adocao' | 'adopted' | 'doado';
 export type PetType = 'dog' | 'cat' | 'other';
 export type PetSize = 'small' | 'medium' | 'large' | 'unknown';
 
